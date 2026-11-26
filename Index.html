@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#020914;color:#00d9ff;
+ font-family:Arial;text-align:center;
+ min-height:100vh;padding:25px 15px;
+}
+h1{letter-spacing:8px;text-shadow:0 0 15px #00d9ff}
+p{color:#8bdfff}
+.circle{
+ width:220px;height:220px;border-radius:50%;
+ border:3px solid #00d9ff;
+ margin:55px auto 35px;
+ display:flex;align-items:center;justify-content:center;
+ box-shadow:0 0 20px #00d9ff, inset 0 0 25px #00d9ff;
+ animation:pulse 2s infinite;
+}
+.core{
+ width:110px;height:110px;border-radius:50%;
+ background:radial-gradient(circle,#fff,#00d9ff,#003b70);
+ box-shadow:0 0 35px #00d9ff;
+}
+@keyframes pulse{
+ 50%{box-shadow:0 0 45px #00d9ff,inset 0 0 35px #00d9ff}
+}
+button{
+ background:transparent;color:#00d9ff;
+ border:1px solid #00d9ff;border-radius:25px;
+ padding:14px 25px;margin:10px;font-size:16px;
+}
+#answer{margin:25px auto;max-width:400px;color:white}
+</style>
+</head>
+<body>
+<h1>J.A.R.V.I.S</h1>
+<p>PERSONAL AI ASSISTANT</p>
+
+<div class="circle">
+ <div class="core"></div>
+</div>
+
+<h3 id="status">SYSTEM ONLINE</h3>
+<p id="answer">Hello! I am JARVIS. How can I help you?</p>
+
+<button onclick="listen()">🎙️ TALK TO JARVIS</button>
+<button onclick="speak('Hello! I am JARVIS. How can I help you?')">
+ 🔊 TEST VOICE
+</button>
+
+<script>
+function speak(text){
+ const msg = new SpeechSynthesisUtterance(text);
+ msg.lang = "en-IN";
+ msg.rate = 0.9;
+ msg.pitch = 1.1;
+
+ const voices = speechSynthesis.getVoices();
+ const female = voices.find(v =>
+   /female|zira|samantha/i.test(v.name)
+ );
+ if(female) msg.voice = female;
+
+ speechSynthesis.cancel();
+ speechSynthesis.speak(msg);
+}
+
+function listen(){
+ const SR = window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+ if(!SR){
+  document.getElementById("status").innerText =
+  "VOICE NOT SUPPORTED";
+  return;
+ }
+
+ const recognition = new SR();
+ recognition.lang = "en-IN";
+ recognition.interimResults = false;
+
+ document.getElementById("status").innerText =
+ "LISTENING...";
+
+ recognition.onresult = function(event){
+  const text = event.results[0][0].transcript;
+  document.getElementById("answer").innerText =
+  "You said: " + text;
+
+  document.getElementById("status").innerText =
+  "JARVIS ONLINE";
+
+  speak("I heard you say " + text);
+ };recognition.onerror = function(event){
+  document.getElementById("status").innerText =
+  "ERROR: " + event.error;
+ };
+
+ recognition.start();
+}
+</script>
+</body>
+</html>
